@@ -96,7 +96,7 @@ let data = {
                 vrsta: "nova znacajka",
                 ocekivan_broj_sati: 25,
                 deadline: "2.12.2023",
-                stanje: "rijesen",
+                stanje: "zavrsen",
                 utroseno_sati: 30,
                 korisnik: {
                     id: 1,

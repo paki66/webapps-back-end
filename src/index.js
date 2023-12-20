@@ -74,4 +74,36 @@ app.delete('/taskovi/:id', (req, res) => {
     }
 })
 
+app.put('/taskovi', (req, res) => {
+    let task = req.body;
+    data.task.forEach((element) => {
+      if (task.id == element.id) {
+        res.statusCode = 201;
+        return res.json({
+          succes: 'task succesfully edited',
+        })
+      }
+    });
+    res.statusCode = 404;
+    res.json({
+      error: 'task doesnt exist',
+    });
+    res.send();
+});
+
+app.put('/taskovi/zavrsen/:id/:sati', (req, res) => {
+    let taskId = req.params.id;
+    let utroseni_sati = req.params.sati;
+    taskId = parseInt(taskId);
+    taskId -= 1;
+    taskId = String(taskId);
+
+    data.task[taskId].stanje = 'zavrsen';
+    data.task[taskId].utroseno_sati = utroseni_sati;
+
+    res.statusCode = 201;
+    res.json(data.task[taskId]);
+    res.send();
+});
+
 app.listen(port, () => console.log(`Slušam na portu ${port}`)) 
