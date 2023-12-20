@@ -148,4 +148,4 @@ let data = {
         ],
 };
 
-module.exports = data.korisnik;
+module.exports = data;

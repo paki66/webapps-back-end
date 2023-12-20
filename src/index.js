@@ -27,7 +27,7 @@ app.get('/korisnici/:id', (req, res) => {
     korisnikId = parseInt(korisnikId);
     korisnikId -= 1;
     korisnikId = String(korisnikId);
-    const korisnik = data[korisnikId];
+    const korisnik = data.korisnik[korisnikId];
 
     if (korisnik) {
         res.json(korisnik);
@@ -36,13 +36,13 @@ app.get('/korisnici/:id', (req, res) => {
       }
 });
 
-app.delete('/korisnici/delete/:id', (req, res) => {
+app.delete('/korisnici/:id', (req, res) => {
   let korisnikId = req.params.id;
   korisnikId = parseInt(korisnikId);
   korisnikId -= 1;
   korisnikId = String(korisnikId);
 
-    if (data[korisnikId]) {
+    if (data.korisnik[korisnikId]) {
       //delete data[korisnikId];
       res.status(204).send();
     } else {
