@@ -16,8 +16,9 @@ app.get('/korisnici', (req, res) => res.json(data.korisnik));
 app.get('/izvjestaji', (req, res) => res.json(data.izvjestaj));
 
 app.post('/izvjestaji', (req, res) => {
+  let dodaniIzvjestaj = req.body;
   res.statusCode = 201;
-  res.setHeader('Location', '/izvjestaji/1234');
+  res.json(dodaniIzvjestaj);
   res.send();
 });
 
