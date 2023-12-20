@@ -14,8 +14,9 @@ app.use(express.json());
 app.get('/korisnici', (req, res) => res.json(data.korisnik));
 
 app.post('/korisnici', (req, res) => {
+    let dodaniKorisnik = req.body;
     res.statusCode = 201;
-    res.setHeader('Location', '/korisnici/1234');
+    res.json(dodaniKorisnik);
     res.send();
 });
 
