@@ -14,8 +14,9 @@ app.use(express.json());
 app.get('/taskovi', (req, res) => res.json(data.task));
 
 app.post('/taskovi', (req, res) => {
+    let dodaniTask = req.body;
     res.statusCode = 201;
-    res.setHeader('Location', '/taskovi/1234');
+    res.json(dodaniTask)
     res.send();
 });
 
