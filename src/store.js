@@ -19,14 +19,6 @@ let data = {
                 pozicija: "manager",
             },
         ],
-    jedan_korisnik: [
-    {
-            id: 1,
-            ime: "Paolo",
-            prezime: "Bursic",
-            pozicija: "radnik",        
-    },
-    ],
     izvjestaj: 
         [
             {
@@ -91,6 +83,12 @@ let data = {
                 deadline: "21.12.2023",
                 stanje: "aktivan",
                 utroseno_sati: 0,
+                korisnik: {
+                    id: 1,
+                    ime: "Paolo",
+                    prezime: "Bursic",
+                    pozicija: "radnik",        
+                },
             },
             {
                 id: 2,
@@ -100,6 +98,12 @@ let data = {
                 deadline: "2.12.2023",
                 stanje: "rijesen",
                 utroseno_sati: 30,
+                korisnik: {
+                    id: 1,
+                    ime: "Paolo",
+                    prezime: "Bursic",
+                    pozicija: "radnik",        
+                },
             },
             {
                 id: 3,
@@ -109,6 +113,12 @@ let data = {
                 deadline: "16.12.2023",
                 stanje: "zakasnjeli",
                 utroseno_sati: 0,
+                korisnik: {
+                    id: 1,
+                    ime: "Paolo",
+                    prezime: "Bursic",
+                    pozicija: "radnik",        
+                },
             },
         ],
     projekt: 
