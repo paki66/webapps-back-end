@@ -1,4 +1,4 @@
-/*import mongo from "mongodb"
+import mongo from "mongodb"
 
 let connnection_string = 
 "mongodb+srv://pabursic:admin@cluster0.omoamcy.mongodb.net/";
@@ -25,4 +25,4 @@ export default () => {
             }
         })
     })
-}*/
+}
