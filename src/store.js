@@ -27,7 +27,7 @@ let data = {
             pozicija: "radnik",        
     },
     ],
-    mjesecni_izvjestaj: 
+    izvjestaj: 
         [
             {
                 id: 1,

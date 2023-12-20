@@ -10,9 +10,6 @@ const port = 3000
 app.use(cors());
 app.use(express.json());
 
-
-const korisnici = require('./store');
-
 // endpointi za korisnika
 app.get('/korisnici', (req, res) => res.json(data.korisnik));
 
@@ -43,16 +40,16 @@ app.delete('/korisnici/:id', (req, res) => {
   korisnikId = String(korisnikId);
 
     if (data.korisnik[korisnikId]) {
-      //delete data[korisnikId];
+      //delete data.korisnik[korisnikId]; 
       res.status(204).send();
     } else {
       res.status(404).send('User not found');
     }
 })
 
-// endpointi za m_izvjestaj
-
 
 // endpointi za task
+
+//endpointi za projekt
 
 app.listen(port, () => console.log(`Slušam na portu ${port}`)) 
