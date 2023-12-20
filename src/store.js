@@ -1,6 +1,5 @@
 let data = {
-    korisnik: {
-        data: [
+    korisnik: [
             {
                 id: 1,
                 ime: "Paolo",
@@ -20,10 +19,16 @@ let data = {
                 pozicija: "manager",
             },
         ],
+    jedan_korisnik: [
+    {
+            id: 1,
+            ime: "Paolo",
+            prezime: "Bursic",
+            pozicija: "radnik",        
     },
+    ],
     mjesecni_izvjestaj: 
-    { 
-        data: [
+        [
             {
                 id: 1,
                 mjesec: "12.2023.",
@@ -77,9 +82,7 @@ let data = {
                 ],
             },
         ],
-    },
-    task: {
-        data: [
+    task: [
             {
                 id: 1,
                 ime: "Login page",
@@ -105,9 +108,8 @@ let data = {
                 stanje: "zakasnjeli",
             },
         ],
-    },
-    projekt: {
-        data: [
+    projekt: 
+    [
             {
                 id: 1,
                 naziv: "ORGanize",
@@ -144,7 +146,6 @@ let data = {
                 taskovi: [],
             },
         ],
-    },
 };
 
 export default data;
