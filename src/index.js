@@ -33,7 +33,32 @@ app.get('/taskovi/id/:id', (req, res) => {
       }
 });
 
+app.get('/taskovi/zaposlenik', (req, res) => {
+    let zaposlenikIme = req.query.ime;
+    let zaposlenikPozicija = req.query.pozicija;
+    let sviTaskovi = data.task;
+    let pripadajuciTaskovi = [];
 
+    sviTaskovi.forEach((element) =>{
+      if (zaposlenikIme == element.korisnik.ime || zaposlenikPozicija == element.korisnik.pozicija) {
+        pripadajuciTaskovi.push(element);
+      }
+    });
+    res.json(pripadajuciTaskovi);
+});
+
+app.get('/taskovi/deadline', (req, res) => {
+  let taskDeadline = req.query.deadline;
+  let sviTaskovi = data.task;
+  let pripadajuciTaskovi = [];
+
+  sviTaskovi.forEach((element) =>{
+    if (taskDeadline == element.deadline) {
+      pripadajuciTaskovi.push(element);
+    }
+  });
+  res.json(pripadajuciTaskovi);
+});
 
 app.delete('/taskovi/:id', (req, res) => {
   let taskId = req.params.id;
