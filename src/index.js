@@ -10,6 +10,4 @@ const port = 3000
 app.use(cors());
 app.use(express.json());
 
-app.get('/korisnici', (req, res) => res.json(data.korisnik));
-
 app.listen(port, () => console.log(`Slušam na portu ${port}`)) 

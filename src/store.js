@@ -27,7 +27,7 @@ let data = {
             pozicija: "radnik",        
     },
     ],
-    mjesecni_izvjestaj: 
+    izvjestaj: 
         [
             {
                 id: 1,
@@ -148,4 +148,4 @@ let data = {
         ],
 };
 
-export default data;
+module.exports = data;
