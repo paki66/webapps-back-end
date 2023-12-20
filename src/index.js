@@ -14,8 +14,9 @@ app.use(express.json());
 app.get('/projekti', (req, res) => res.json(data.projekt));
 
 app.post('/projekti', (req, res) => {
+  let dodaniProjekt = req.body;
   res.statusCode = 201;
-  res.setHeader('Location', '/projekti/1234');
+  res.json(dodaniProjekt);
   res.send();
 });
 
