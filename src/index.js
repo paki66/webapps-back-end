@@ -145,4 +145,43 @@ app.put('/taskovi/zavrsen/:id/:sati', (req, res) => {
     res.send();
 });
 
+// endpointi za m_izvjestaj
+app.get('/izvjestaji', (req, res) => res.json(data.izvjestaj));
+
+app.post('/izvjestaji', (req, res) => {
+  let dodaniIzvjestaj = req.body;
+  res.statusCode = 201;
+  res.json(dodaniIzvjestaj);
+  res.send();
+});
+
+app.get('/izvjestaji/:id', (req, res) => {
+  let izvjestajId = req.params.id;
+  izvjestajId = parseInt(izvjestajId);
+  izvjestajId -= 1;
+  izvjestajId = String(izvjestajId);
+  const izvjestaj = data.izvjestaj[izvjestajId];
+
+  if (izvjestaj) {
+      res.json(izvjestaj);
+    } else {
+      res.status(404).send('Report not found');
+    }
+});
+
+app.delete('/izvjestaji/:id', (req, res) => {
+let izvjestajId = req.params.id;
+izvjestajId = parseInt(izvjestajId);
+izvjestajId -= 1;
+izvjestajId = String(izvjestajId);
+
+  if (data.izvjestaj[izvjestajId]) {
+    //delete data.izvjestaj[izvjestajId]; 
+    res.status(204).send();
+  } else {
+    res.status(404).send('Report not found');
+  }
+})
+
+
 app.listen(port, () => console.log(`Slušam na portu ${port}`)) 
