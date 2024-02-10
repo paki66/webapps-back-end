@@ -1,6 +1,5 @@
 let data = {
-    korisnik: {
-        data: [
+    korisnik: [
             {
                 id: 1,
                 ime: "Paolo",
@@ -20,10 +19,8 @@ let data = {
                 pozicija: "manager",
             },
         ],
-    },
-    mjesecni_izvjestaj: 
-    { 
-        data: [
+    izvjestaj: 
+        [
             {
                 id: 1,
                 mjesec: "12.2023.",
@@ -77,37 +74,55 @@ let data = {
                 ],
             },
         ],
-    },
-    task: {
-        data: [
+    task: [
             {
                 id: 1,
                 ime: "Login page",
                 vrsta: "nova znacajka",
-                broj_sati: 20,
+                ocekivan_broj_sati: 20,
                 deadline: "21.12.2023",
                 stanje: "aktivan",
+                utroseno_sati: 0,
+                korisnik: {
+                    id: 1,
+                    ime: "Paolo",
+                    prezime: "Bursic",
+                    pozicija: "radnik",        
+                },
             },
             {
                 id: 2,
                 ime: "Main page",
                 vrsta: "nova znacajka",
-                broj_sati: 25,
+                ocekivan_broj_sati: 25,
                 deadline: "2.12.2023",
-                stanje: "rijesen",
+                stanje: "zavrsen",
+                utroseno_sati: 30,
+                korisnik: {
+                    id: 1,
+                    ime: "Paolo",
+                    prezime: "Bursic",
+                    pozicija: "radnik",        
+                },
             },
             {
                 id: 3,
                 ime: "Sign up page",
                 vrsta: "nova znacajka",
-                broj_sati: 10,
+                ocekivan_broj_sati: 10,
                 deadline: "16.12.2023",
                 stanje: "zakasnjeli",
+                utroseno_sati: 0,
+                korisnik: {
+                    id: 3,
+                    ime: "John",
+                    prezime: "Doe",
+                    pozicija: "manager",
+                },
             },
         ],
-    },
-    projekt: {
-        data: [
+    projekt: 
+    [
             {
                 id: 1,
                 naziv: "ORGanize",
@@ -144,43 +159,7 @@ let data = {
                 taskovi: [],
             },
         ],
-    },
-    pretragaIspita: {
-        data: {
-            datum: '01-05-2020',
-            kolegij: {
-                sifra: 'wapps',
-                naziv: 'Web aplikacije',
-                semestar: '3-ljetni',
-            },
-            ocjene: [
-                {
-                    ocjena: 4,
-                    student: {
-                        jmbag: '003512341234',
-                        ime: 'Nikola',
-                        prezime: 'Tanković',
-                    },
-                },
-            ],
-        },
-    },
-    ocjenaStudenta: {
-        data: {
-            datum: '01-05-2020',
-            kolegij: {
-                sifra: 'wapps',
-                naziv: 'Web aplikacije',
-                semestar: '3-ljetni',
-            },
-            ocjena: 4,
-            student: {
-                jmbag: '003512341234',
-                ime: 'Nikola',
-                prezime: 'Tanković',
-            },
-        },
-    },
 };
 
-export default data;
+module.exports = data;
+module.exports = data;
