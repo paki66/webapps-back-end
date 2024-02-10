@@ -1,28 +1,28 @@
-/*import mongo from "mongodb"
+import { MongoClient, ServerApiVersion } from "mongodb";
+const uri =
+  "mongodb+srv://admin:admin@organize.ilo2skw.mongodb.net/?retryWrites=true&w=majority";
 
-let connnection_string = 
-"mongodb+srv://pabursic:admin@cluster0.omoamcy.mongodb.net/";
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
 
-let client = new mongo.MongoClient(connection_string, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-
-export default () => {
-    return new Promise((resolve, reject) => {
-        if (db && client.isConnected()) {
-            resolve(db)
-        }
-
-        client.connect(err => {
-            if (err) {
-                reject("Doslo je do pogreske prilikom spajanja: " + err)
-            }
-            else {
-                console.log("Uspjesno spajanje na bazu")
-                db = client.db("fipogram")
-                resolve(db)
-            }
-        })
-    })
-}*/
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
+run().catch(console.dir);
