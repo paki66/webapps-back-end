@@ -1,28 +1,15 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
-const uri =
-  "mongodb+srv://admin:admin@organize.ilo2skw.mongodb.net/?retryWrites=true&w=majority";
+import { MongoClient } from "mongodb";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
+const connectionString = 
+"mongodb+srv://admin:admin@organize.ilo2skw.mongodb.net/";
 
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
+const client = new MongoClient(connectionString);
+
+let conn;
+try {
+  conn = await client.connect();
+} catch(e) {
+  console.error(e);
 }
-run().catch(console.dir);
+let dbs = conn.db("ORGanize");
+export default dbs;

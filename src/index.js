@@ -1,12 +1,22 @@
 import express from "express";
 import cors from "cors";
 import data from "./store.js";
+import dbs from "./db.js";
 
 const app = express();
 const port = 3000;
 
 app.use(cors());
 app.use(express.json());
+
+app.get("/korisnici/db", async (req, res) => {
+  //let db = await dbs.conn();
+  
+  let cursor = await dbs.collection("korisnici").find();
+  let results = await cursor.toArray();
+
+  res.json(results);
+})
 
 // endpointi za korisnika
 app.get("/korisnici", (req, res) => res.json(data.korisnik));
