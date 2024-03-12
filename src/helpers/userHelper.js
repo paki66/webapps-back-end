@@ -1,8 +1,7 @@
 import db from "../db.js";
 
 let usersCollection = db.collection("users");
-
-export const signup = async (req, res) => {
+const signup = async (req, res) => {
   console.log(req.body);
   let user = {
     name: req.body.name,
@@ -13,3 +12,15 @@ export const signup = async (req, res) => {
   };
   let result = await usersCollection.insertOne(user);
 };
+
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await usersCollection.findOne({ email, password });
+
+  if (!user || password !== user.password) {
+    return res.status(401).json({ message: "Incorrect email or password" });
+  }
+};
+
+export { signup, login };
