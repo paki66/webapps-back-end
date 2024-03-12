@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import data from "./store.js";
-import dbs from "./db.js";
+import db from "./db.js";
 
 const app = express();
 const port = 3000;
@@ -9,55 +9,95 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
-app.get("/korisnici/db", async (req, res) => {
-  //let db = await dbs.conn();
-  
-  let cursor = await dbs.collection("korisnici").find();
+app.get("/login/:email/:password", async (req, res) => {
+  let email = req.params.email;
+  let password = req.params.password;
+
+  let cursor = await db.collection("users").find({email: email, password: password});
   let results = await cursor.toArray();
 
-  res.json(results);
+  if (results.length == 0) {
+    res.status(404).send("Login failed!");
+  }
+  else {
+    res.json(results);
+  }
 })
 
-// endpointi za korisnika
-app.get("/korisnici", (req, res) => res.json(data.korisnik));
+app.post("/signup", async (req, res) => {
+  let addedUser = req.body;
+  let email = addedUser["email"];
 
-app.post("/korisnici", (req, res) => {
-  let dodaniKorisnik = req.body;
-  res.statusCode = 201;
-  res.json(dodaniKorisnik);
-  res.send();
+  if (await db.collection("users").countDocuments({email: email}) == 0) {
+    let cursor = await db.collection("users").insertOne(addedUser);
+    res.statusCode = 201;
+    res.json(addedUser).send;
+  }
+  else {
+    res.status(400).send("User with that email already exists!").send;
+  }
 });
 
-app.get("/korisnici/:id", (req, res) => {
-  let korisnikId = req.params.id;
-  korisnikId = parseInt(korisnikId);
-  korisnikId -= 1;
-  korisnikId = String(korisnikId);
-  const korisnik = data.korisnik[korisnikId];
 
-  if (korisnik) {
-    res.json(korisnik);
+app.get("/users/status", async (req, res) => {
+  const projection = {name: 1, status: 1, surname: 1}; 
+  let cursor = await db.collection("users").find({}).project(projection);
+  let results = await cursor.toArray();
+  res.json(results);
+});
+
+app.delete("/users/:email", async (req, res) => {
+  let email = req.params.email;
+
+  if (await db.collection("users").countDocuments({email: email}) > 0) {
+    let cursor = await db.collection("users").deleteOne({email: email});
+    res.status(200).send("User deleted!");
   } else {
     res.status(404).send("User not found");
   }
 });
 
-app.delete("/korisnici/:id", (req, res) => {
-  let korisnikId = req.params.id;
-  korisnikId = parseInt(korisnikId);
-  korisnikId -= 1;
-  korisnikId = String(korisnikId);
+app.patch("/users/status/:email", async (req, res) => {
+  let email = req.params.email;
+  let body = req.body;
+  let userStatus = body.status;  
+  let patch = await db.collection("users").updateOne({email: email},{$set: {status: userStatus}});
+  let cursor = await db.collection("users").find({email: email});
+  let result = await cursor.toArray();
+  res.json(result);
+});
 
-  if (data.korisnik[korisnikId]) {
-    //delete data.korisnik[korisnikId];
-    res.status(204).send();
-  } else {
-    res.status(404).send("User not found");
+app.patch("/users/password/:email", async (req, res) => {
+  let email = req.params.email;
+  let old_password = req.body.old_password;
+  let new_password = req.body.new_password;
+  if (await db.collection("users").countDocuments({email: email, password: old_password}) > 0) {
+    let patch = await db.collection("users").updateOne({email: email, password: old_password},{$set: {password: new_password}});
+    let cursor = await db.collection("users").find({email: email});
+    let result = await cursor.toArray();
+    res.json(result);
+  }
+  else {
+    res.status(400).send("Wrong password or email");
   }
 });
+
+app.patch("/users/info/:email", async (req, res) => {
+  let email = req.params.email;
+  let body = req.body;
+  let patch = await db.collection("users").updateOne({email: email},{$set: {name: body.name, surname: body.surname, email: body.email}});
+  let cursor = await db.collection("users").find({email: body.email});
+  let result = await cursor.toArray();
+  res.json(result);
+});
+
 
 //endpointi za task
-app.get("/taskovi", (req, res) => res.json(data.task));
+app.get("/taskovi", async (req, res) => {
+  let cursor = await db.collection("taskovi").find();
+  let results = await cursor.toArray();
+  res.json(results);
+});
 
 app.post("/taskovi", (req, res) => {
   let dodaniTask = req.body;
@@ -157,7 +197,11 @@ app.put("/taskovi/zavrsen/:id/:sati", (req, res) => {
 });
 
 // endpointi za m_izvjestaj
-app.get("/izvjestaji", (req, res) => res.json(data.izvjestaj));
+app.get("/izvjestaji", async (req, res) => {
+  let cursor = await db.collection("izvjestaji").find();
+  let results = await cursor.toArray();
+  res.json(results);
+});
 
 app.post("/izvjestaji", (req, res) => {
   let dodaniIzvjestaj = req.body;
@@ -195,7 +239,11 @@ app.delete("/izvjestaji/:id", (req, res) => {
 });
 
 // endpointi za projekte
-app.get("/projekti", (req, res) => res.json(data.projekt));
+app.get("/projekti", async (req, res) => {
+  let cursor = await db.collection("projekti").find();
+  let results = await cursor.toArray();
+  res.json(results);
+});
 
 app.post("/projekti", (req, res) => {
   let dodaniProjekt = req.body;
