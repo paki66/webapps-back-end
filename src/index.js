@@ -93,107 +93,79 @@ app.patch("/users/info/:email", async (req, res) => {
 
 
 //endpointi za task
-app.get("/taskovi", async (req, res) => {
-  let cursor = await db.collection("taskovi").find();
+app.get("/tasks/:report", async (req, res) => {
+  let report = req.params.report;
+  let cursor = await db.collection("tasks").find({report: report});
   let results = await cursor.toArray();
   res.json(results);
 });
 
-app.post("/taskovi", (req, res) => {
-  let dodaniTask = req.body;
+app.post("/tasks", async (req, res) => {
+  let addedTask = req.body;
+  let cursor = await db.collection("tasks").insertOne(addedTask);
   res.statusCode = 201;
-  res.json(dodaniTask);
-  res.send();
+  res.json(addedTask).send;
 });
 
-app.get("/taskovi/id/:id", (req, res) => {
-  let taskId = req.params.id;
-  taskId = parseInt(taskId);
-  taskId -= 1;
-  taskId = String(taskId);
-  const task = data.task[taskId];
-
-  if (task) {
-    res.json(task);
+app.delete("/tasks/:name/:report", async (req, res) => {
+  let name = req.params.name;
+  let report = req.params.report;
+  if (await db.collection("tasks").countDocuments({name: name, report: report}) > 0) {
+    let cursor = await db.collection("tasks").deleteOne({name: name, report: report});
+    res.status(200).send("Task deleted!");
   } else {
-    res.status(404).send("task not found");
+    res.status(404).send("Task not found");
   }
 });
 
-app.get("/taskovi/zaposlenik", (req, res) => {
-  let zaposlenikIme = req.query.ime;
-  let zaposlenikPozicija = req.query.pozicija;
-  let sviTaskovi = data.task;
-  let pripadajuciTaskovi = [];
+app.get("/tasks", async (req, res) => {
+  let userEmail = req.query.email;
+  let name = req.query.name;
+  let query = {
+    $and: [
+      {"user_email": {$regex: new RegExp(userEmail, 'i')}}, 
+      {"name": {$regex: new RegExp(name, 'i')}}
+    ]
+  };
 
-  sviTaskovi.forEach((element) => {
-    if (
-      zaposlenikIme == element.korisnik.ime ||
-      zaposlenikPozicija == element.korisnik.pozicija
-    ) {
-      pripadajuciTaskovi.push(element);
-    }
-  });
-  res.json(pripadajuciTaskovi);
+  let cursor = await db.collection("tasks").find(query);
+  let results = await cursor.toArray();
+  res.json(results);
 });
 
-app.get("/taskovi/deadline", (req, res) => {
-  let taskDeadline = req.query.deadline;
-  let sviTaskovi = data.task;
-  let pripadajuciTaskovi = [];
-
-  sviTaskovi.forEach((element) => {
-    if (taskDeadline == element.deadline) {
-      pripadajuciTaskovi.push(element);
-    }
-  });
-  res.json(pripadajuciTaskovi);
-});
-
-app.delete("/taskovi/:id", (req, res) => {
-  let taskId = req.params.id;
-  taskId = parseInt(taskId);
-  taskId -= 1;
-  taskId = String(taskId);
-
-  if (data.task[taskId]) {
-    //delete data.task[taskId];
-    res.status(204).send();
-  } else {
-    res.status(404).send("task not found");
-  }
-});
-
-app.put("/taskovi", (req, res) => {
+app.put("/tasks/:name/:report", async (req, res) => {
+  let name = req.params.name;
+  let report = req.params.report;
   let task = req.body;
-  data.task.forEach((element) => {
-    if (task.id == element.id) {
-      res.statusCode = 201;
-      return res.json({
-        succes: "task succesfully edited",
-      });
-    }
-  });
-  res.statusCode = 404;
-  res.json({
-    error: "task doesnt exist",
-  });
-  res.send();
+
+  let put = await db.collection("tasks").updateOne({name: name, report: report},
+    {$set: {category: task.category, deadline: task.deadline, expected_time: task.expected_time, name: task.name, report: task.report, 
+      status: task.status, user_email: task.user_email}});
+
+  let cursor = await db.collection("tasks").find({name: task.name, report: task.report});
+  let result = await cursor.toArray();
+  res.json(result);
 });
 
-app.put("/taskovi/zavrsen/:id/:sati", (req, res) => {
-  let taskId = req.params.id;
-  let utroseni_sati = req.params.sati;
-  taskId = parseInt(taskId);
-  taskId -= 1;
-  taskId = String(taskId);
+app.patch("/tasks/completed/:name/:report", async (req, res) => {
+  let name = req.params.name;
+  let report = req.params.report;
+  let taken_time = req.body.taken_time;
 
-  data.task[taskId].stanje = "zavrsen";
-  data.task[taskId].utroseno_sati = utroseni_sati;
+  let patch = await db.collection("tasks").updateOne({name: name, report: report},{$set: {status: "completed", taken_time: taken_time}});
+  let cursor = await db.collection("tasks").find({name: name, report: report});
+  let result = await cursor.toArray();
+  res.json(result);
+});
 
-  res.statusCode = 201;
-  res.json(data.task[taskId]);
-  res.send();
+app.patch("/tasks/expired/:name/:report", async (req, res) => {
+  let name = req.params.name;
+  let report = req.params.report;
+
+  let patch = await db.collection("tasks").updateOne({name: name, report: report},{$set: {status: "expired"}});
+  let cursor = await db.collection("tasks").find({name: name, report: report});
+  let result = await cursor.toArray();
+  res.json(result);
 });
 
 // endpointi za m_izvjestaj
