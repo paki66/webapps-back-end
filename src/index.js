@@ -239,44 +239,33 @@ app.delete("/izvjestaji/:id", (req, res) => {
 });
 
 // endpointi za projekte
-app.get("/projekti", async (req, res) => {
-  let cursor = await db.collection("projekti").find();
+app.get("/projects", async (req, res) => {
+  let cursor = await db.collection("projects").find();
   let results = await cursor.toArray();
   res.json(results);
 });
 
-app.post("/projekti", (req, res) => {
-  let dodaniProjekt = req.body;
-  res.statusCode = 201;
-  res.json(dodaniProjekt);
-  res.send();
-});
+app.post("/projects", async (req, res) => {
+  let addedProject = req.body;
+  let name = addedProject["name"];
 
-app.get("/projekti/:id", (req, res) => {
-  let projektId = req.params.id;
-  projektId = parseInt(projektId);
-  projektId -= 1;
-  projektId = String(projektId);
-  const projekt = data.projekt[projektId];
-
-  if (projekt) {
-    res.json(projekt);
-  } else {
-    res.status(404).send("project not found");
+  if (await db.collection("projects").countDocuments({name: name}) == 0) {
+    let cursor = await db.collection("projects").insertOne(addedProject);
+    res.statusCode = 201;
+    res.json(addedProject).send;
+  }
+  else {
+    res.status(400).send("Project with that name already exists!").send;
   }
 });
 
-app.delete("/projekti/:id", (req, res) => {
-  let projektId = req.params.id;
-  projektId = parseInt(projektId);
-  projektId -= 1;
-  projektId = String(projektId);
-
-  if (data.projekt[projektId]) {
-    //delete data.izvjestaj[izvjestajId];
-    res.status(204).send();
+app.delete("/projects/:name", async (req, res) => {
+  let name = req.params.name;
+  if (await db.collection("projects").countDocuments({name: name}) > 0) {
+    let cursor = await db.collection("projects").deleteOne({name: name});
+    res.status(200).send("Project deleted!");
   } else {
-    res.status(404).send("Report not found");
+    res.status(404).send("Project not found");
   }
 });
 
