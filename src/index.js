@@ -9,9 +9,9 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
-app.get("/login/:email/:password", async (req, res) => {
-  let email = req.params.email;
-  let password = req.params.password;
+app.get("/login", async (req, res) => {
+  let email = req.body.email;
+  let password = req.body.password;
 
   let cursor = await db.collection("users").find({email: email, password: password});
   let results = await cursor.toArray();
@@ -107,9 +107,9 @@ app.post("/tasks", async (req, res) => {
   res.json(addedTask).send;
 });
 
-app.delete("/tasks/:name/:report", async (req, res) => {
-  let name = req.params.name;
-  let report = req.params.report;
+app.delete("/tasks", async (req, res) => {
+  let name = req.body.name;
+  let report = req.body.report;
   if (await db.collection("tasks").countDocuments({name: name, report: report}) > 0) {
     let cursor = await db.collection("tasks").deleteOne({name: name, report: report});
     res.status(200).send("Task deleted!");
@@ -133,9 +133,9 @@ app.get("/tasks", async (req, res) => {
   res.json(results);
 });
 
-app.put("/tasks/:name/:report", async (req, res) => {
-  let name = req.params.name;
-  let report = req.params.report;
+app.put("/tasks", async (req, res) => {
+  let name = req.body.name;
+  let report = req.body.report;
   let task = req.body;
 
   let put = await db.collection("tasks").updateOne({name: name, report: report},
@@ -147,9 +147,9 @@ app.put("/tasks/:name/:report", async (req, res) => {
   res.json(result);
 });
 
-app.patch("/tasks/completed/:name/:report", async (req, res) => {
-  let name = req.params.name;
-  let report = req.params.report;
+app.patch("/tasks/completed", async (req, res) => {
+  let name = req.body.name;
+  let report = req.body.report;
   let taken_time = req.body.taken_time;
 
   let patch = await db.collection("tasks").updateOne({name: name, report: report},{$set: {status: "completed", taken_time: taken_time}});
@@ -158,9 +158,9 @@ app.patch("/tasks/completed/:name/:report", async (req, res) => {
   res.json(result);
 });
 
-app.patch("/tasks/expired/:name/:report", async (req, res) => {
-  let name = req.params.name;
-  let report = req.params.report;
+app.patch("/tasks/expired", async (req, res) => {
+  let name = req.body.name;
+  let report = req.body.report;
 
   let patch = await db.collection("tasks").updateOne({name: name, report: report},{$set: {status: "expired"}});
   let cursor = await db.collection("tasks").find({name: name, report: report});
