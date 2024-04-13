@@ -21,15 +21,21 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await usersCollection.findOne({ email });
+    const user = await usersCollection.findOne({ email });
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ message: "Incorrect email or password" });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ message: "Incorrect email or password" });
+    }
+
+    createToken(user, 200, res);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
   }
-
-  createToken(user, 200, res);
 };
 
 const signToken = (id) => {
