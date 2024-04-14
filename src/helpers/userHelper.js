@@ -12,10 +12,12 @@ export const signup = async (req, res) => {
     surname: req.body.surname,
     email: req.body.email,
     password: passwordHash,
+    role: req.body.role,
   };
   let result = await usersCollection.insertOne(user);
   if (result.acknowledged === true) {
-    createToken(result, user, 201, res);
+    user._id = result.insertedId;
+    createToken(user, 201, res);
   } else {
     res.status(500);
   }
@@ -27,8 +29,8 @@ const signToken = (id) => {
   });
 };
 
-const createToken = (data, user, statusCode, res) => {
-  const token = signToken(data.insertedId);
+const createToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
   user.password = undefined;
 
   res.status(statusCode).json({
