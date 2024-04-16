@@ -1,6 +1,5 @@
 import express from "express";
-import { signup } from "../helpers/userHelper.js";
-import { login } from "../helpers/userHelper.js";
+import { signup, protect, login } from "../helpers/userHelper.js";
 
 const router = express.Router();
 
