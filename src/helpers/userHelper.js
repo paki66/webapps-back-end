@@ -1,6 +1,7 @@
 import db from "../db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { ObjectId } from "mongodb";
 
 let usersCollection = db.collection("users");
 export const signup = async (req, res) => {
@@ -94,4 +95,12 @@ export const protect = async (req, res, next) => {
 
   req.user = currentUser;
   next();
+};
+
+export const changeStatus = async (req, res, next) => {
+  const response = await usersCollection.updateOne(
+    { _id: ObjectId.createFromHexString(req.body.userId) },
+    { $set: { status: req.body.statusId } }
+  );
+  res.status(204).json({ status: "success", data: null });
 };
