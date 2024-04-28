@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 let usersCollection = db.collection("users");
+
 export const signup = async (req, res) => {
   console.log(req.body);
   let passwordHash = await bcrypt.hash(req.body.password, 10);
@@ -37,6 +38,42 @@ export const login = async (req, res) => {
     res
       .status(500)
       .json({ message: "An error occurred", error: error.message });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const user = await usersCollection.findOne(
+      { email: req.body.email },
+      { projection: { password: 1 } }
+    );
+
+    if (!(await bcrypt.compare(req.body.currentPassword, user.password))) {
+      res.status(401).json({
+        status: "fail",
+        message: "Wrong current password",
+      });
+      return;
+    }
+    if (req.body.password === req.body.repeatPassword) {
+      user.password = await bcrypt.hash(req.body.password, 10);
+      await usersCollection.updateOne(
+        { email: req.body.email },
+        { $set: { password: user.password } }
+      );
+
+      createToken(user, 200, res);
+    } else {
+      res
+        .status(401)
+        .json({ status: "fail", message: "Passwords don't match." });
+      return;
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: console.error(error),
+    });
   }
 };
 
@@ -77,19 +114,26 @@ export const protect = async (req, res, next) => {
   }
 
   if (!token) {
-    return next(new ErrorHandler("You are not logged in", 401));
+    return res.status(401).json({ message: "You are not logged in" });
   }
 
-  const decoded_user = await promisify(jwt.verify)(token, "TopSecret");
+  let decoded_user;
+  try {
+    decoded_user = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
 
-  const currentUser = await User.findById(decoded_user.id);
+  const currentUser = await usersCollection.findOne({ _id: decoded_user.id });
 
   if (!currentUser) {
-    return next(new ErrorHandler("User with this token no longer exists", 401));
+    return res
+      .status(401)
+      .json({ message: "User with this token no longer exists" });
   }
 
   if (hasChangedPassword(decoded_user.iat)) {
-    return next(new ErrorHandler("Password changed, log in again.", 401));
+    return res.status(401).json({ message: "Password changed, log in again." });
   }
 
   req.user = currentUser;
