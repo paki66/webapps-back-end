@@ -13,6 +13,7 @@ export const signup = async (req, res) => {
     email: req.body.email,
     password: passwordHash,
     role: req.body.role,
+    status: req.body.status,
   };
   let result = await usersCollection.insertOne(user);
   if (result.acknowledged === true) {
