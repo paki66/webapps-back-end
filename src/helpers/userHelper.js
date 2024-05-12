@@ -44,21 +44,20 @@ export const login = async (req, res) => {
 export const changePassword = async (req, res) => {
   try {
     const user = await usersCollection.findOne(
-      { email: req.body.email },
+      { email: req.body.loggedEmail },
       { projection: { password: 1 } }
     );
 
     if (!(await bcrypt.compare(req.body.currentPassword, user.password))) {
-      res.status(401).json({
+      return res.status(401).json({
         status: "fail",
         message: "Wrong current password",
       });
-      return;
     }
     if (req.body.password === req.body.repeatPassword) {
       user.password = await bcrypt.hash(req.body.password, 10);
       await usersCollection.updateOne(
-        { email: req.body.email },
+        { email: req.body.loggedEmail },
         { $set: { password: user.password } }
       );
 
@@ -77,13 +76,13 @@ export const changePassword = async (req, res) => {
   }
 };
 
-const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+const signToken = (email) => {
+  return jwt.sign({ email }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 const createToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
+  const token = signToken(user.email);
   user.password = undefined;
 
   res.status(statusCode).json({
@@ -94,13 +93,45 @@ const createToken = (user, statusCode, res) => {
     },
   });
 };
+export const changeStatus = async (req, res, next) => {
+  const response = await usersCollection.updateOne(
+    { email: req.body.email },
+    { $set: { status: req.body.statusId } }
+  );
+  res.status(204).json({ status: "success", data: null });
+};
 
-let hasChangedPassword = function (JWTTimestamp) {
-  if (this.password_changed_at) {
-    const changed_at = parseInt(this.password_changed_at.getTime() / 1000, 10);
-    return JWTTimestamp < changed_at;
+export const updateInfo = async (req, res) => {
+  try {
+    const user = await usersCollection.findOne({ email: req.body.loggedEmail });
+
+    if (user) {
+      await usersCollection.updateOne(
+        { email: req.body.loggedEmail },
+        {
+          $set: {
+            email: req.body.email,
+            phone: req.body.phone,
+            userType: req.body.userType,
+            anniversary: req.body.anniversary,
+          },
+        }
+      );
+      res.status(200).json({
+        status: "success",
+        message: "Profile info successfully changed.",
+      });
+      return;
+    } else {
+      res.status(401).json({ status: "fail", message: "An error occured." });
+      return;
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: console.error(error),
+    });
   }
-  return false;
 };
 
 export const protect = async (req, res, next) => {
@@ -123,19 +154,16 @@ export const protect = async (req, res, next) => {
   } catch (error) {
     return res.status(401).json({ message: "Invalid token" });
   }
-
-  const currentUser = await usersCollection.findOne({ _id: decoded_user.id });
+  console.log(decoded_user);
+  const currentUser = await usersCollection.findOne({
+    email: decoded_user.email,
+  });
 
   if (!currentUser) {
     return res
       .status(401)
       .json({ message: "User with this token no longer exists" });
   }
-
-  if (hasChangedPassword(decoded_user.iat)) {
-    return res.status(401).json({ message: "Password changed, log in again." });
-  }
-
   req.user = currentUser;
   next();
 };
