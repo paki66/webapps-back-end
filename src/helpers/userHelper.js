@@ -95,12 +95,61 @@ const createToken = (user, statusCode, res) => {
     },
   });
 };
+export const getUserStatus = async (req, res, next) => {
+  try {
+    const email = req.query.email;
+    const userStatus = await usersCollection.findOne({ email: email });
+    if (userStatus) {
+      res.status(200).json({
+        status: "success",
+        message: "User status successfully retrieved.",
+        data: userStatus.status,
+      });
+    } else {
+      res.status(404).json({
+        status: "fail",
+        message: "User not found.",
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    res.status(500).json({
+      status: "error",
+      message: "An error occurred while fetching user info.",
+    });
+  }
+};
+
 export const changeStatus = async (req, res, next) => {
   const response = await usersCollection.updateOne(
-    { email: req.body.email },
+    { _id: new ObjectId(req.body.userId) },
     { $set: { status: req.body.statusId } }
   );
   res.status(204).json({ status: "success", data: null });
+};
+export const getUserInfo = async (req, res) => {
+  try {
+    const email = req.query.email;
+    const userInfo = await usersCollection.findOne({ email: email });
+    if (userInfo) {
+      res.status(200).json({
+        status: "success",
+        message: "User info successfully retrieved.",
+        data: userInfo,
+      });
+    } else {
+      res.status(404).json({
+        status: "fail",
+        message: "User not found.",
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    res.status(500).json({
+      status: "error",
+      message: "An error occurred while fetching user info.",
+    });
+  }
 };
 
 export const updateInfo = async (req, res) => {
@@ -136,6 +185,46 @@ export const updateInfo = async (req, res) => {
   }
 };
 
+export const deleteProfile = async (req, res) => {
+  try {
+    const user = await usersCollection.findOne({
+      _id: new ObjectId(req.query._id),
+    });
+    if (user) {
+      await usersCollection.deleteOne({ _id: new ObjectId(req.query._id) });
+      res.status(200).json({
+        status: "success",
+        message: "You have successfully deleted your profile.",
+      });
+      return;
+    } else {
+      res.status(401).json({ status: "fail", message: "An error occured." });
+      return;
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: console.error(error),
+    });
+  }
+};
+
+export const getAllStatuses = async (req, res) => {
+  try {
+    const statuses = await usersCollection.find().toArray();
+    res.status(200).json({
+      status: "success",
+      message: "Employee's statues are successfully retrieved.",
+      data: statuses,
+    });
+  } catch (error) {
+    console.error("Failed to retrieve documents from the collection:", error);
+    res.status(500).json({
+      status: "error",
+      message: "An error occurred.",
+    });
+  }
+};
 export const protect = async (req, res, next) => {
   let token;
 
