@@ -5,9 +5,6 @@ import projectsRouter from "./routes/projects.js";
 import db from "./db.js";
 import reportsRouter from "./routes/reports.js";
 import userRouter from "./routes/userRouter.js";
-import projectsRouter from "./routes/projects.js";
-import tasksRouter from "./routes/tasks.js";
-
 const app = express();
 const port = 3000;
 
@@ -130,22 +127,20 @@ app.put("/tasks", async (req, res) => {
   let report = req.body.report;
   let task = req.body;
 
-  let put = await db
-    .collection("tasks")
-    .updateOne(
-      { name: name, report: report },
-      {
-        $set: {
-          category: task.category,
-          deadline: task.deadline,
-          expected_time: task.expected_time,
-          name: task.name,
-          report: task.report,
-          status: task.status,
-          user_email: task.user_email,
-        },
-      }
-    );
+  let put = await db.collection("tasks").updateOne(
+    { name: name, report: report },
+    {
+      $set: {
+        category: task.category,
+        deadline: task.deadline,
+        expected_time: task.expected_time,
+        name: task.name,
+        report: task.report,
+        status: task.status,
+        user_email: task.user_email,
+      },
+    }
+  );
 
   let cursor = await db
     .collection("tasks")
