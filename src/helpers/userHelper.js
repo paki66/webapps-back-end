@@ -129,8 +129,8 @@ export const changeStatus = async (req, res, next) => {
 };
 export const getUserInfo = async (req, res) => {
   try {
-    const email = req.query.email;
-    const userInfo = await usersCollection.findOne({ email: email });
+    const _id = req.query.userId;
+    const userInfo = await usersCollection.findOne({ _id: new ObjectId(_id) });
     if (userInfo) {
       res.status(200).json({
         status: "success",

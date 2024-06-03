@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import data from "./store.js";
 import userRouter from "./routes/userRouter.js";
+import projectsRouter from "./routes/projects.js";
+import tasksRouter from "./routes/tasks.js";
 
 const app = express();
 const port = 3000;
@@ -9,6 +11,8 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 app.use("/users", userRouter);
+app.use("/api/projects", projectsRouter);
+app.use("/api/tasks", tasksRouter);
 
 // endpointi za korisnika
 app.get("/korisnici", (req, res) => res.json(data.korisnik));
