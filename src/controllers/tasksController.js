@@ -47,20 +47,19 @@ export const postTask = async (req, res) => {
 
 export const putTask = async (req, res) => {
   const name = req.body.name;
-  const report = req.body.report;
   const task = req.body;
 
   const put = await db.collection("tasks").updateOne(
-    { name: name, report: report },
+    { name: name, },
     {
       $set: {
         category: task.category,
         deadline: task.deadline,
         expected_time: task.expected_time,
         name: task.name,
-        report: task.report,
+        taken_time: task.taken_time,
         status: task.status,
-        user_email: task.user_email,
+        user_id: task.user_id,
       },
     }
   );
