@@ -11,10 +11,7 @@ export const getProjectTasks = async (req, res) => {
       .toArray();
 
     if (!tasks.length) {
-      return res.status(404).json({
-        status: "fail",
-        message: "No tasks found in this project.",
-      });
+      return res.json(null);
     }
 
     const groupedTasks = tasks.reduce((acc, task) => {

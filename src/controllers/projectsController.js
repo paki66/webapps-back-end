@@ -74,10 +74,11 @@ export const getEmployeeProjects = async (req, res) => {
 };
 
 export const postProject = async (req, res) => {
-  const addedProject = req.body;
-  const name = addedProject["name"];
+  const title = req.body.name;
+  const owner = new ObjectId(req.body.owner);
+  const addedProject = { title, owner };
 
-  if ((await db.collection("projects").countDocuments({ name: name })) == 0) {
+  if ((await db.collection("projects").countDocuments({ title: title })) == 0) {
     const cursor = await db.collection("projects").insertOne(addedProject);
     res.statusCode = 201;
     res.json(addedProject).send;

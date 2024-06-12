@@ -13,7 +13,7 @@ const projectsRouter = express.Router();
 projectsRouter.get("/ownerProjects", protect, getManagerProjects);
 projectsRouter.get("/employeeProjects", protect, getEmployeeProjects);
 
-projectsRouter.post("/", postProject);
+projectsRouter.post("/", protect, postProject);
 
 projectsRouter.put("/:name", putProject);
 
