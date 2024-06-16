@@ -11,9 +11,9 @@ import { protect } from "../helpers/userHelper.js";
 const tasksRouter = express.Router();
 tasksRouter.get("/getProjectTasks", protect, getProjectTasks);
 
-tasksRouter.post("/", postTask);
+tasksRouter.post("/", protect, postTask);
 
-tasksRouter.put("/", putTask);
+tasksRouter.put("/", protect, putTask);
 
 tasksRouter.patch("/completed", patchTask);
 

@@ -39,36 +39,63 @@ export const getProjectTasks = async (req, res) => {
 };
 
 export const postTask = async (req, res) => {
-  const addedTask = req.body;
-  const cursor = await db.collection("tasks").insertOne(addedTask);
-  res.statusCode = 201;
-  res.json(addedTask).send;
+  const project_id = new ObjectId(req.body.projectId);
+  const employee = new ObjectId(req.body.employee);
+  const title = req.body.title;
+  const month_year = req.body.month_year;
+  const taken_time = req.body.taken_time;
+  const expected_time = parseInt(req.body.expected_time);
+  const status = req.body.status;
+  const category = req.body.category;
+  const deadline = new Date(req.body.deadline);
+  const newTask = {
+    project_id,
+    employee,
+    title,
+    month_year,
+    taken_time,
+    expected_time,
+    status,
+    category,
+    deadline,
+  };
+
+  if ((await tasksCollection.countDocuments({ title: title })) == 0) {
+    const cursor = await tasksCollection.insertOne(newTask);
+    res.statusCode = 201;
+    res.json(newTask).send;
+  } else {
+    res.status(400).send("Task with that name already exists!").send;
+  }
 };
 
 export const putTask = async (req, res) => {
-  const name = req.body.name;
-  const task = req.body;
-
-  const put = await db.collection("tasks").updateOne(
-    { name: name, },
-    {
-      $set: {
-        category: task.category,
-        deadline: task.deadline,
-        expected_time: task.expected_time,
-        name: task.name,
-        taken_time: task.taken_time,
-        status: task.status,
-        user_id: task.user_id,
-      },
-    }
-  );
-
-  const cursor = await db
-    .collection("tasks")
-    .find({ name: task.name, report: task.report });
-  const result = await cursor.toArray();
-  res.json(result);
+  const _id = new ObjectId(req.body.taskId);
+  if (await tasksCollection.findOne({ _id: _id })) {
+    const cursor = await tasksCollection.updateOne(
+      { _id: _id },
+      {
+        $set: {
+          project_id: new ObjectId(req.body.projectId),
+          _id: new ObjectId(req.body.taskId),
+          employee: new ObjectId(req.body.employee),
+          title: req.body.title,
+          month_year: req.body.month_year,
+          taken_time: req.body.taken_time,
+          expected_time: parseInt(req.body.expected_time),
+          status: req.body.status,
+          category: req.body.category,
+          deadline: new Date(req.body.deadline),
+        },
+      }
+    );
+    res.status(200).json({
+      status: "success",
+      message: "Task successfully updated.",
+    });
+  } else {
+    res.status(404).send("Task not found!").send;
+  }
 };
 
 export const patchTask = async (req, res) => {
