@@ -139,3 +139,101 @@ export const deleteTask = async (req, res) => {
     });
   }
 };
+
+export const getTasksReports = async (req, res) => {
+  try {
+    const projectId = req.query.projectId;
+    const monthYear = req.query.month_year;
+
+    const tasks = await tasksCollection
+      .find({
+        project_id: new ObjectId(projectId),
+        month_year: monthYear,
+      })
+      .toArray();
+
+    const employeeData = {};
+    const categoryData = {};
+
+    tasks.forEach((task) => {
+      const employeeId = task.employee.toString();
+      const category = task.category;
+      const status = task.status;
+      const expectedTime = task.expected_time;
+      const takenTime = task.taken_time ? task.taken_time : 0;
+
+      // Employee Report
+      if (!employeeData[employeeId]) {
+        employeeData[employeeId] = {
+          todo: 0,
+          completed: 0,
+          expired: 0,
+          expectedHours: 0,
+          takenHours: 0,
+        };
+      }
+
+      if (status == 2) {
+        employeeData[employeeId].expired += 1;
+      } else if (status == 1) {
+        employeeData[employeeId].completed += 1;
+      } else if (status == 0) {
+        employeeData[employeeId].todo += 1;
+      }
+
+      employeeData[employeeId].expectedHours += expectedTime;
+      employeeData[employeeId].takenHours += takenTime;
+
+      // Category Report
+      if (!categoryData[category]) {
+        categoryData[category] = {
+          totalTasks: 0,
+          todo: 0,
+          completed: 0,
+          expired: 0,
+          expectedHours: 0,
+          takenHours: 0,
+        };
+      }
+
+      categoryData[category].totalTasks += 1;
+
+      if (status == 2) {
+        categoryData[category].expired += 1;
+      } else if (status == 1) {
+        categoryData[category].completed += 1;
+      } else if (status == 0) {
+        categoryData[category].todo += 1;
+      }
+
+      categoryData[category].expectedHours += expectedTime;
+      categoryData[category].takenHours += takenTime;
+    });
+
+    const employeeReport = Object.keys(employeeData).map((employeeId) => ({
+      employee: employeeId,
+      ...employeeData[employeeId],
+    }));
+    const categoryReport = Object.keys(categoryData).map((category) => ({
+      category,
+      ...categoryData[category],
+    }));
+
+    res.status(200).json({
+      employeeReport: Object.keys(employeeData).map((employeeId) => ({
+        employee: employeeId,
+        ...employeeData[employeeId],
+      })),
+      categoryReport: Object.keys(categoryData).map((category) => ({
+        category,
+        ...categoryData[category],
+      })),
+    });
+  } catch (error) {
+    console.error("Error fetching report data", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
