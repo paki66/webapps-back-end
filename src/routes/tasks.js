@@ -17,6 +17,6 @@ tasksRouter.put("/", protect, putTask);
 
 tasksRouter.patch("/completed", patchTask);
 
-tasksRouter.delete("/", deleteTask);
+tasksRouter.delete("/", protect, deleteTask);
 
 export default tasksRouter;

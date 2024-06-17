@@ -117,18 +117,25 @@ export const patchTask = async (req, res) => {
 };
 
 export const deleteTask = async (req, res) => {
-  const name = req.body.name;
-  const report = req.body.report;
-  if (
-    (await db
-      .collection("tasks")
-      .countDocuments({ name: name, report: report })) > 0
-  ) {
-    const cursor = await db
-      .collection("tasks")
-      .deleteOne({ name: name, report: report });
-    res.status(200).send("Task deleted!");
-  } else {
-    res.status(404).send("Task not found");
+  try {
+    const task = await tasksCollection.findOne({
+      _id: new ObjectId(req.query.id),
+    });
+    if (task) {
+      await tasksCollection.deleteOne({ _id: new ObjectId(req.query.id) });
+      res.status(200).json({
+        status: "success",
+        message: "You have successfully deleted your task.",
+      });
+      return;
+    } else {
+      res.status(401).json({ status: "fail", message: "An error occured." });
+      return;
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: console.error(error),
+    });
   }
 };
