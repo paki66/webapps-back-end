@@ -6,6 +6,7 @@ import {
   patchTask,
   deleteTask,
   getTasksReports,
+  patchTaskEmployee,
 } from "../controllers/tasksController.js";
 import { protect } from "../helpers/userHelper.js";
 
@@ -17,6 +18,8 @@ tasksRouter.get("/getReportTasks", protect, getTasksReports);
 tasksRouter.post("/", protect, postTask);
 
 tasksRouter.put("/", protect, putTask);
+
+tasksRouter.patch("/employeeEdit", protect, patchTaskEmployee);
 
 tasksRouter.patch("/completed", patchTask);
 

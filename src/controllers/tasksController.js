@@ -237,3 +237,25 @@ export const getTasksReports = async (req, res) => {
     });
   }
 };
+
+export const patchTaskEmployee = async (req, res) => {
+  const _id = new ObjectId(req.body.taskId);
+  if (await tasksCollection.findOne({ _id: _id })) {
+    const cursor = await tasksCollection.updateOne(
+      { _id: _id },
+      {
+        $set: {
+          _id: new ObjectId(req.body.taskId),
+          taken_time: parseInt(req.body.taken_time),
+          status: req.body.status,
+        },
+      }
+    );
+    res.status(200).json({
+      status: "success",
+      message: "Task successfully updated.",
+    });
+  } else {
+    res.status(404).send("Task not found!").send;
+  }
+};
